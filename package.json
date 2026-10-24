@@ -2,6 +2,7 @@
   "name": "domain-scout-plugin",
   "version": "0.2.0",
   "private": true,
+  "license": "MIT",
   "description": "Creative domain discovery for Codex and Claude",
   "type": "module",
   "engines": {

@@ -196,3 +196,8 @@ to embed newer IANA routing data.
 - [Naming](docs/naming.md): directions and shortest-domain search
 - [Catalog](docs/catalog.md): the bundled IANA routing data
 - [Validation](docs/validation.md): what has been tested, and what hasn't
+
+## License
+
+[MIT](LICENSE). Bundled dependencies keep their own licenses; see
+[third-party notices](THIRD_PARTY_NOTICES.md).

@@ -1,5 +1,6 @@
 {
   "name": "domain-scout",
   "version": "0.2.0",
-  "description": "Creative domain naming with fast, evidence-backed availability checks"
+  "description": "Creative domain naming with fast, evidence-backed availability checks",
+  "license": "MIT"
 }
