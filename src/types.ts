@@ -1,5 +1,5 @@
 export type Availability =
-  | 'available' | 'registered' | 'unavailable' | 'not_found'
+  | 'available' | 'likely_taken' | 'registered' | 'unavailable' | 'not_found'
   | 'unsupported' | 'unknown' | 'invalid';
 
 export interface DomainName {

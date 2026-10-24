@@ -34,12 +34,14 @@ export class DomainEngine {
     return describeSources(this.catalog, this.context, tlds, refresh);
   }
 
-  async check(domains: string[], fresh = false, maxWaitMs = this.maxWaitMs): Promise<CheckOutput> {
+  async check(domains: string[], fresh = false, maxWaitMs = this.maxWaitMs, screen = true): Promise<CheckOutput> {
     if (!Number.isSafeInteger(maxWaitMs) || maxWaitMs <= 0 || maxWaitMs > MAX_TIMER_MS) {
       throw new Error(`maxWaitMs must be a positive integer at most ${MAX_TIMER_MS}.`);
     }
     const started = this.context.now();
     const deadline = Date.now() + maxWaitMs;
+    const skip = screen ? undefined : new Set(['dns']);
+    const inflightKey = (domain: string) => `${domain}:${screen}`;
     for (const [key, entry] of this.cache) if (entry.until <= started) this.cache.delete(key);
     const normalized = domains.map(normalizeDomain);
     const unique = new Map(normalized.filter(isDomainName).map(name => [name.domain, name]));
@@ -50,16 +52,16 @@ export class DomainEngine {
     let cacheHits = 0;
     for (const name of unique.values()) {
       const cached = this.cache.get(name.domain);
-      if (!fresh && cached && cached.until > started) {
+      if (!fresh && cached && cached.until > started && (screen || cached.value.status !== 'likely_taken')) {
         cacheHits++;
         promises.set(name.domain, Promise.resolve({ ...cached.value, cached: true }));
         continue;
       }
       if (cached) this.cache.delete(name.domain);
-      let pending = this.inflight.get(name.domain);
+      let pending = this.inflight.get(inflightKey(name.domain));
       if (!pending) {
         pending = new Promise<DomainResult>(done => resolve.set(name.domain, done));
-        this.inflight.set(name.domain, pending);
+        this.inflight.set(inflightKey(name.domain), pending);
         work.push(name);
       }
       promises.set(name.domain, pending);
@@ -74,11 +76,11 @@ export class DomainEngine {
           if (this.ttl && !['unknown', 'invalid'].includes(item.status)) {
             this.cache.set(item.domain, { value, until: this.context.now() + this.ttl });
           }
-          this.inflight.delete(item.domain);
+          this.inflight.delete(inflightKey(item.domain));
           done(value);
         }
       };
-      void this.router.lookup(work, { deadline, onResult: finish }).then(finish, error => finish(work.map(name =>
+      void this.router.lookup(work, { deadline, skip, onResult: finish }).then(finish, error => finish(work.map(name =>
         result(name, 'routing', 'unknown', 'Lookup failed', { reason: error instanceof Error ? error.message : 'Unknown error' }))));
     }
     const all = Promise.all([...promises].map(async ([key, pending]) => {
@@ -102,7 +104,7 @@ export class DomainEngine {
         elapsedMs: this.context.now() - started, maxWaitMs,
         deferred: results.filter(item => item.reason === 'time_budget_exhausted').length,
       },
-      interpretation: 'Available means explicitly reported registrable by the named source at checkedAt. No-record, unknown, unsupported and invalid results need further resolution. Prices retain the provider currency and quoted periods.',
+      interpretation: 'Available means explicitly reported registrable by the named source at checkedAt. likely_taken means DNS lists nameservers; the registry was not asked. No-record, unknown, unsupported and invalid results need further resolution. Prices retain the provider currency and quoted periods.',
     };
   }
 }

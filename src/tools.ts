@@ -13,6 +13,8 @@ export const domainSourcesSchema = z.object({
 export const checkDomainsSchema = z.object({
   domains: z.array(z.string().min(1)).min(1)
     .describe('Exact registrable domains, including their suffix. Batch candidates in one call.'),
+  screen: z.boolean().default(true)
+    .describe('Use DNS to rule out names that are clearly in use before slow registry lookups. Set false to ask the registry about a likely_taken name.'),
   fresh: z.boolean().default(false)
     .describe('Bypass cached evidence when verifying finalists; in-progress checks may still be shared.'),
   maxWaitMs: z.number().int().positive().max(MAX_TIMER_MS).optional()
@@ -27,8 +29,8 @@ export function createToolHandlers(engine = new DomainEngine()) {
     },
     prepare_domain_search: (input: unknown) => prepareDomainSearch(prepareDomainSearchSchema.parse(input)),
     check_domains: (input: unknown) => {
-      const { domains, fresh, maxWaitMs } = checkDomainsSchema.parse(input);
-      return engine.check(domains, fresh, maxWaitMs);
+      const { domains, fresh, maxWaitMs, screen } = checkDomainsSchema.parse(input);
+      return engine.check(domains, fresh, maxWaitMs, screen);
     },
   };
 }

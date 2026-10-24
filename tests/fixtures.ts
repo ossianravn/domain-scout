@@ -27,7 +27,7 @@ export function fixture(options: FixtureOptions = {}) {
   const unexpected: string[] = [];
   let now = Date.parse('2026-10-23T12:00:00Z');
   const context: ProviderContext = {
-    env: options.env ?? {}, now: () => now,
+    env: { DOMAIN_SCOUT_DNS_RESOLVERS: '', ...options.env }, now: () => now,
     async request(url, init) {
       requests.push({ url, init });
       if (url === `${registrar}/tlds/supported`) return response(200, options.catalog ?? ['com']);

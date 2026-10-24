@@ -1,3 +1,4 @@
+import { parseDnsResolvers } from './providers/dns-screen.js';
 import { RegistryCatalog } from './registry-catalog.js';
 import { normalizeDomainSuffix } from './shortnames.js';
 import { genericWhoisExcludedSuffixes } from './providers/whois.js';
@@ -16,7 +17,13 @@ export async function describeSources(catalog: RegistryCatalog, ctx: ProviderCon
   tlds: string[] = [], refresh = false) {
   const suffixes = [...new Set(tlds.map(normalizeDomainSuffix))];
   const refreshed = refresh ? await catalog.refresh(ctx) : undefined;
+  const resolvers = parseDnsResolvers(ctx.env.DOMAIN_SCOUT_DNS_RESOLVERS);
   return {
+    screening: {
+      enabled: resolvers.length > 0, resolvers: resolvers.map(resolver => new URL(resolver).hostname),
+      appliesTo: 'Names whose first source is paced: .dk, .nl, .be and WHOIS-only routes.',
+      evidence: 'likely_taken means DNS lists nameservers for the exact name; registration is not confirmed.',
+    },
     catalog: catalog.summary(),
     ...(refreshed ? { refresh: refreshed } : {}),
     extensions: suffixes.map(suffix => {

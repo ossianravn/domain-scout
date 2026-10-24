@@ -11,9 +11,9 @@ export class LookupRouter {
   }
 
   async lookup(names: DomainName[], options: {
-    start?: number; deadline?: number; onResult?: (items: DomainResult[]) => void;
+    start?: number; deadline?: number; skip?: ReadonlySet<string>; onResult?: (items: DomainResult[]) => void;
   } = {}): Promise<DomainResult[]> {
-    const { start = 0, deadline = Infinity, onResult } = options;
+    const { start = 0, deadline = Infinity, skip, onResult } = options;
     const output = new Map<string, DomainResult>();
     const settled = new Set<string>();
     const coverage = new Map<string, Attempt[]>();
@@ -67,7 +67,7 @@ export class LookupRouter {
         publish(complete);
         if (!fallback.length) return;
         await this.lookup(fallback, {
-          start: index + 1, deadline,
+          start: index + 1, deadline, skip,
           onResult: items => publish(items.map(item => {
             const previous = output.get(item.domain)!;
             if (item.source === 'routing' && item.status === 'unsupported') return previous;
@@ -101,6 +101,7 @@ export class LookupRouter {
       const attempts: Attempt[] = [];
       coverage.set(name.domain, attempts);
       for (let index = start; index < this.providers.length; index++) {
+        if (skip?.has(this.providers[index].id)) continue;
         if (Date.now() >= deadline) {
           publish([result(name, 'scheduler', 'unknown', 'The lookup wait budget expired before source discovery completed.', {
             reason: 'time_budget_exhausted', ...(attempts.length ? { attempts } : {}),
