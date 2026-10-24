@@ -10,7 +10,7 @@ export function createNetworkContext(
     env, now: () => Date.now(),
     async request(url, init = {}) {
       const headers = new Headers(init.headers);
-      if (!headers.has('user-agent')) headers.set('user-agent', 'DomainScout/0.2.0');
+      if (!headers.has('user-agent')) headers.set('user-agent', 'DomainScout/0.3.0');
       const timeout = AbortSignal.timeout(timeoutMs);
       const signal = init.signal ? AbortSignal.any([init.signal, timeout]) : timeout;
       const response = await fetch(url, { ...init, headers, signal });

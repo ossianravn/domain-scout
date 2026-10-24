@@ -146,8 +146,9 @@ data, see [catalog](docs/catalog.md).
 
 **Speed.** Sources run in parallel, and repeat lookups within a minute come
 from a cache. A call waits up to 10 seconds by default: names not finished by
-then come back `unknown` and can be checked again. `.dk` and `.nl` answer
-about one name per second, so large batches on those take longer.
+then come back `unknown` and can be checked again. `.dk`, `.nl` and `.be`
+answer about one name per second, so the agent checks fewer, better names
+there.
 
 ## Settings
 

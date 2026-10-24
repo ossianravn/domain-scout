@@ -3,20 +3,17 @@ import { z } from 'zod/v4';
 import { DomainEngine } from './engine.js';
 import { checkDomainsSchema, createToolHandlers, domainSourcesSchema, prepareDomainSearchSchema } from './tools.js';
 
-export const instructions = `Help the user find attractive domains for their project.
-For a naming request, call prepare_domain_search with preferences already known.
-Resolve material missing naming preferences with a concise question and illustrated choices.
-Use the host model to create diverse, meaningful candidates in the requested language.
-Then call check_domains with batches of exact domains. An explicit request to check names can go directly to check_domains.
-Use domain_sources when extension coverage matters. Published routes do not guarantee registrability or current service health.
-For shortest-domain searches, use shortSearch patterns and pages from prepare_domain_search.
-Compare complete hostname length, pronunciation, spelling, price, and the user's stated priorities.
-Only status available establishes that the named source reports registrability at checkedAt.
-Do not turn not_found, unknown, unsupported, or a DNS failure into available.
-Preserve quoted currency and periods; do not assume an unspecified renewal period is annual.
-Show sources, timestamps, and reasons with the shortlist. Recheck finalists with fresh=true.
-Report shortest found within the explored scope, unless the agreed smaller search space was exhausted.
-The tools search names; they do not buy, reserve, or register them.`;
+export const instructions = `Help the user find a name and domain they can actually register.
+A list of exact domains: call check_domains directly.
+A naming request: call prepare_domain_search with everything already known. If nextAction is ask_preferences, ask one short turn: the naming-style question with unchecked examples adapted to the project, plus at most one other question that changes the search. "A mix" is a valid answer.
+Write names with the host model across several directions and constructions; no more than a quarter of a wave may share a root, prefix or suffix.
+Screen before checking: drop names that are hard to spell when heard, read two ways, are long for what they carry, misfit the audience, or imitate a known brand.
+Wave size follows source speed: 25-50 names per call for fast endings such as .com; the best 10-15 for .dk, .nl, .be and WHOIS-only endings, with maxWaitMs about 1200 per name. Use domain_sources when coverage is unclear.
+After each check, move the next wave towards the constructions and endings that came back open. Do not recheck names, except finalists with fresh=true.
+Present a recommendation, then three to seven names with why each fits, status, source and check time, and price with currency and period.
+Only status available means the named source reports the name registrable at checkedAt. Never turn not_found, unknown, unsupported or a DNS failure into available, and never assume an unstated renewal period is annual.
+For shortest-name searches, page through shortSearch patterns and report the shortest found within the explored scope.
+The tools look names up; they never buy, reserve or register them.`;
 
 function toolResult(value: object) {
   return {
@@ -27,7 +24,7 @@ function toolResult(value: object) {
 
 export function createMcpServer(engine = new DomainEngine()) {
   const handlers = createToolHandlers(engine);
-  const server = new McpServer({ name: 'domain-scout', version: '0.2.0' }, { instructions });
+  const server = new McpServer({ name: 'domain-scout', version: '0.3.0' }, { instructions });
   server.registerTool('domain_sources', {
     title: 'Inspect domain lookup sources',
     description: 'Show the local registry catalog, published RDAP/WHOIS routes for requested extensions, and configured availability sources. No network by default; refresh=true explicitly updates IANA routing metadata.',

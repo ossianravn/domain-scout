@@ -1,28 +1,46 @@
-# Naming workflow
+# Naming techniques
 
-The host model supplies linguistic judgment and creativity. The server returns
-a structured brief, generation guidance, and exact lookup evidence.
+Directions say *what* a name means; constructions say *how* it is built. A
+good wave varies both. Example names below illustrate a construction; none of
+them has been checked.
 
-## Brief
+## Constructions
 
-Call `prepare_domain_search` with the project and preferences already supplied
-in the conversation. Its primary questions cover missing naming direction and
-material product ambiguity. Optional questions identify language, endings,
-budget, and acquisition preferences. Ask them when an answer changes the search;
-the user may choose a mixed first pass.
+| Construction | How | Example | Watch for |
+| --- | --- | --- | --- |
+| Descriptive | Category plus qualifier | LessonPlanner | Usually registered on `.com`; clearer on a local ending |
+| Benefit compound | Outcome plus object | RecallNest | Two nouns that sound like a stock-photo caption |
+| Borrowed word | One real word with a fitting association | Lantern | Bare dictionary words on `.com` are nearly always taken; pair with a short word or another ending |
+| Altered word | Drop, swap or add a letter or ending | Tidly | Must still pass "heard once, typed right" |
+| Blend | Two roots fused at a shared sound | Pin + interest | The join must read one way |
+| Coinage | A new pronounceable word, often two or three syllables | Veluno | Should hint at a feeling, not just sound random |
+| Phrase across the dot | Label and ending read as one phrase | husk.at | The ending must be open to the public and fit the market |
+| Modifier on a fixed brand | get-, try-, use-, -app, -hq | getlantern.com | A fallback when the brand is decided and the bare name is taken; say so |
 
-Style examples illustrate the difference between descriptive, suggestive,
-metaphorical, playful, invented, and domain-phrase naming. Their availability
-is untested. Adapt examples to the user's language and project.
+For "a mix", take at least one direction through three or more constructions.
+For a single style, vary the direction instead.
 
-Generate independent conceptual directions before close spelling variants.
-For a second brain, capture, recall, connection, rediscovery, cultivation, and
-personal space each express a different product benefit. Preserve the direction
-and a short rationale with candidates so feedback can refine the next wave.
+## Language and market
 
-Check exact domains in batches. Present a concise shortlist with naming fit,
-availability evidence, source, timestamp, and quoted pricing periods. Retain
-favorites, rejected directions, and already checked domains in conversation.
+- Write names the target audience would say. A Danish news site needs Danish
+  newspaper instincts (*Tidende*, *-posten*), not English puns.
+- Danish æ, ø and å make an internationalized domain (`xn--…`), which is
+  longer in ASCII and harder to type abroad. Offer the ae/oe/aa spelling too,
+  and check both when both would be used.
+- Check what a name means in English as well as the target language.
+- Local endings (`.dk`, `.se`, `.nl`) carry trust at home and often have more
+  open short words than `.com`.
+
+## Reading a wave's results
+
+- Mostly taken: the construction is crowded. Move to compounds, altered words
+  or coinages, or to an accepted alternative ending, rather than more of the
+  same.
+- Mostly open but weak: the screen was too loose. Tighten it before the next
+  wave instead of checking more.
+- A favorite is taken: check two or three close neighbours (a modifier, the
+  other spelling, an accepted alternative ending) and say what each change
+  costs in meaning.
 
 ## Short-domain generation
 

@@ -1,6 +1,6 @@
 # Install Domain Scout
 
-Domain Scout 0.2.0 runs locally in Codex or Claude Code. The release includes
+Domain Scout 0.3.0 runs locally in Codex or Claude Code. The release includes
 `dist/server.cjs` with its JavaScript dependencies bundled. End users do not
 need to run `npm install`. Developers rebuilding from source use the commands
 at the end of this guide.
