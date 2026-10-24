@@ -1,0 +1,13 @@
+{
+  "name": "domain-scout-local",
+  "owner": {
+    "name": "Ossian Ravn Engmark"
+  },
+  "plugins": [
+    {
+      "name": "domain-scout",
+      "source": "./",
+      "description": "Creative domain naming and fast availability checks"
+    }
+  ]
+}

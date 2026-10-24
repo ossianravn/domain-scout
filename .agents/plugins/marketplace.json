@@ -1,0 +1,20 @@
+{
+  "name": "domain-scout-local",
+  "interface": {
+    "displayName": "Domain Scout"
+  },
+  "plugins": [
+    {
+      "name": "domain-scout",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

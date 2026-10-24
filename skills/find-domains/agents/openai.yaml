@@ -1,0 +1,4 @@
+interface:
+  display_name: "Domain Scout"
+  short_description: "Find memorable domains with fast availability checks"
+  default_prompt: "Use $find-domains to help me find an attractive, available domain for my project."

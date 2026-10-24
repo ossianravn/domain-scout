@@ -1,0 +1,59 @@
+{
+  "results": [
+    {
+      "domain": "example.com",
+      "displayDomain": "example.com",
+      "hostnameLength": 11,
+      "labelLength": 7,
+      "source": "vercel",
+      "status": "unavailable",
+      "checkedAt": "2026-10-24T00:06:46.755Z",
+      "evidence": "Vercel reports this domain unavailable for registration on a supported extension.",
+      "reason": "provider_reports_unavailable",
+      "durationMs": 621,
+      "cached": false
+    },
+    {
+      "domain": "domain-scout-build-20261024-64bf73.com",
+      "displayDomain": "domain-scout-build-20261024-64bf73.com",
+      "hostnameLength": 38,
+      "labelLength": 34,
+      "source": "vercel",
+      "status": "available",
+      "checkedAt": "2026-10-24T00:06:46.755Z",
+      "evidence": "Vercel reports this domain available for registration.",
+      "pricing": {
+        "currency": "USD",
+        "registration": 11.25,
+        "registrationYears": 1,
+        "renewal": 11.25,
+        "renewalYears": null,
+        "premium": false
+      },
+      "durationMs": 621,
+      "cached": false
+    },
+    {
+      "domain": "isnic.is",
+      "displayDomain": "isnic.is",
+      "hostnameLength": 8,
+      "labelLength": 5,
+      "source": "isnic",
+      "status": "unavailable",
+      "checkedAt": "2026-10-24T00:06:43.185Z",
+      "evidence": "ISNIC’s availability service reports this domain unavailable; it may exist or be pending.",
+      "reason": "registry_reports_unavailable",
+      "durationMs": 758,
+      "cached": false
+    }
+  ],
+  "summary": {
+    "inputCount": 3,
+    "uniqueDomains": 3,
+    "cacheHits": 0,
+    "elapsedMs": 4340,
+    "maxWaitMs": 10000,
+    "deferred": 0
+  },
+  "interpretation": "Available means explicitly reported registrable by the named source at checkedAt. No-record, unknown, unsupported and invalid results need further resolution. Prices retain the provider currency and quoted periods."
+}

@@ -1,0 +1,9 @@
+import './naming.test.js';
+import './providers.test.js';
+import './mcp.test.js';
+import './latency.test.js';
+import './catalog.test.js';
+import './registry-services.test.js';
+import './who-dat.test.js';
+import './whois.test.js';
+import './rdap-routing.test.js';

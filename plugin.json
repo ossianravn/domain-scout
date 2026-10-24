@@ -1,0 +1,19 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "domain-scout",
+  "version": "0.2.0",
+  "description": "Creative domain naming with fast, evidence-backed availability checks",
+  "keywords": [
+    "domains",
+    "naming",
+    "availability"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Domain Scout",
+        "shortDescription": "Find memorable domains and check availability"
+      }
+    }
+  }
+}

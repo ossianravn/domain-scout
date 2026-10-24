@@ -1,0 +1,59 @@
+{
+  "results": [
+    {
+      "domain": "example.com",
+      "displayDomain": "example.com",
+      "hostnameLength": 11,
+      "labelLength": 7,
+      "source": "vercel",
+      "status": "unavailable",
+      "checkedAt": "2026-10-24T00:56:06.303Z",
+      "evidence": "Vercel reports this domain unavailable for registration on a supported extension.",
+      "reason": "provider_reports_unavailable",
+      "durationMs": 682,
+      "cached": false
+    },
+    {
+      "domain": "domain-scout-20261024-7ac5c9e21.com",
+      "displayDomain": "domain-scout-20261024-7ac5c9e21.com",
+      "hostnameLength": 35,
+      "labelLength": 31,
+      "source": "vercel",
+      "status": "available",
+      "checkedAt": "2026-10-24T00:56:06.304Z",
+      "evidence": "Vercel reports this domain available for registration.",
+      "pricing": {
+        "currency": "USD",
+        "registration": 11.25,
+        "registrationYears": 1,
+        "renewal": 11.25,
+        "renewalYears": null,
+        "premium": false
+      },
+      "durationMs": 682,
+      "cached": false
+    },
+    {
+      "domain": "domain-scout-20261024-7ac5c9e21.nl",
+      "displayDomain": "domain-scout-20261024-7ac5c9e21.nl",
+      "hostnameLength": 34,
+      "labelLength": 31,
+      "source": "sidn",
+      "status": "unknown",
+      "checkedAt": "2026-10-24T00:56:12.836Z",
+      "evidence": "The source could not be reached or the request timed out.",
+      "reason": "request_failed",
+      "durationMs": 8001,
+      "cached": false
+    }
+  ],
+  "summary": {
+    "inputCount": 3,
+    "uniqueDomains": 3,
+    "cacheHits": 0,
+    "elapsedMs": 8014,
+    "maxWaitMs": 10000,
+    "deferred": 0
+  },
+  "interpretation": "Available means explicitly reported registrable by the named source at checkedAt. No-record, unknown, unsupported and invalid results need further resolution. Prices retain the provider currency and quoted periods."
+}
