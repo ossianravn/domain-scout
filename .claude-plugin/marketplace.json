@@ -3,11 +3,12 @@
   "owner": {
     "name": "Ossian Ravn Engmark"
   },
+  "description": "Domain Scout: find a domain name you can actually register.",
   "plugins": [
     {
       "name": "domain-scout",
       "source": "./",
-      "description": "Creative domain naming and fast availability checks"
+      "description": "Suggests domain names for your project and checks them live with registries and registrars, including prices."
     }
   ]
 }

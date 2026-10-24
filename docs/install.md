@@ -1,6 +1,6 @@
 # Install Domain Scout
 
-Domain Scout 0.4.0 runs locally in Codex or Claude Code. The release includes
+Domain Scout 0.4.1 runs locally in Codex or Claude Code. The release includes
 `dist/server.cjs` with its JavaScript dependencies bundled. End users do not
 need to run `npm install`. Developers rebuilding from source use the commands
 at the end of this guide.
@@ -64,12 +64,12 @@ codex plugin list --json
 ```
 
 Launch a new Codex session after installation. Select the `find-domains` skill
-from the skill picker, or ask: “Use Domain Scout to find a domain for a Danish
-AI news site.” The shared skill is `skills/find-domains/SKILL.md`.
+from the skill picker, or ask: “Use Domain Scout to find a .com for a
+language-learning app.” The shared skill is `skills/find-domains/SKILL.md`.
 
 ## Claude Code
 
-Claude uses `.claude-plugin/plugin.json` and root `.mcp.json`.
+Claude reads `.claude-plugin/plugin.json`, which also declares the MCP server.
 
 ### Try it immediately
 
@@ -155,7 +155,8 @@ For example:
 
 - “Find the shortest attractive domain for a short URL service.”
 - “Find a memorable name for a second brain app; prefer `.com`.”
-- “Find a Danish domain for an AI news site; prefer `.dk`.”
+- “Find a name and a .com for a language-learning app that works in English,
+  Spanish and German.”
 
 ## Troubleshooting and updates
 
@@ -167,9 +168,9 @@ executable search paths.
 `plugin install` command; Codex uses `plugin add`.
 
 **Skill appears but tools do not:** inspect the MCP connection, confirm
-`dist/server.cjs` exists, and confirm `node --version` is at least 22. Both native
-MCP configuration files intentionally point to the same bundle with each
-client's supported root placeholder.
+`dist/server.cjs` exists, and confirm `node --version` is at least 22. Codex's
+`mcp.json` and the `mcpServers` entry in `.claude-plugin/plugin.json` point to
+the same bundle, each with its client's root placeholder.
 
 **An updated source folder has no effect:** marketplace installations can use a
 cached copy. Refresh or reinstall through the client and start a new session.

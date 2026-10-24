@@ -1,9 +1,13 @@
 import { type DomainProvider, type ProviderContext } from '../types.js';
 import { checked, malformed, sameDomain, transportFailure } from './shared.js';
 
+// Punktum WHOIS spec: 1 request per second per source IP; exceeding it triggers a
+// temporary ban of unstated length. Pace with a margin and back off after a ban.
+const BAN_COOLDOWN_MS = 10_000;
+
 export function createDkProvider(ctx: ProviderContext): DomainProvider {
   return {
-    id: 'punktum-whois', batchSize: 1, minIntervalMs: 1000, concurrency: 1,
+    id: 'punktum-whois', batchSize: 1, minIntervalMs: 1100, concurrency: 1,
     supports: async (name) => name.suffix === 'dk',
     async check(names) {
       return Promise.all(names.map(async (name) => {
@@ -36,7 +40,8 @@ export function createDkProvider(ctx: ProviderContext): DomainProvider {
           }
           if (lines.some((line) => /\b(rate limit|too many requests|temporarily banned)\b/i.test(line))) {
             return checked(ctx, name, 'punktum-whois', 'unknown',
-              'Punktum declined the lookup because of a request limit.', { reason: 'rate_limited' });
+              'Punktum declined the lookup because of its one-request-per-second limit; retry in about 10 seconds.',
+              { reason: 'rate_limited', retryAfterMs: BAN_COOLDOWN_MS });
           }
           return malformed(ctx, name, 'punktum-whois');
         } catch {

@@ -1,6 +1,6 @@
 import { createToolHandlers } from './tools.js';
 
-const usage = `Domain Scout 0.4.0 — Node 22+
+const usage = `Domain Scout 0.4.1 — Node 22+
 
   node dist/cli.cjs prepare '<JSON brief>'
   node dist/cli.cjs check '<JSON domains object>'

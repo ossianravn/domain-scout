@@ -1,6 +1,18 @@
 {
   "name": "domain-scout",
-  "version": "0.4.0",
-  "description": "Creative domain naming with fast, evidence-backed availability checks",
-  "license": "MIT"
+  "displayName": "Domain Scout",
+  "version": "0.4.1",
+  "description": "Suggests domain names for your project and checks them live with registries and registrars, including prices.",
+  "author": {
+    "name": "Ossian Ravn Engmark"
+  },
+  "homepage": "https://github.com/ossianravn/domain-scout",
+  "repository": "https://github.com/ossianravn/domain-scout",
+  "license": "MIT",
+  "mcpServers": {
+    "domain-scout": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/dist/server.cjs"]
+    }
+  }
 }

@@ -84,7 +84,9 @@ Judge every name from outside in, before it reaches a lookup:
 - Send the survivors in one `check_domains` call. Never send a name twice in a
   conversation, except finalists rechecked with `fresh: true`.
 - Names marked `time_budget_exhausted` or `rate_limited` stay unresolved.
-  Retry only those, once, or report them as unresolved.
+  Retry only those, once. A `rate_limited` result's `retryAfterMs` says when the
+  source accepts requests again; a retry before then comes back unsent, so
+  retry after that time or report the names as unresolved with it.
 - Treat `likely_taken` as taken when ranking. If the user wants that exact
   name anyway, recheck it with `screen: false` to ask the registry.
 

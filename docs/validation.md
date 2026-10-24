@@ -1,7 +1,10 @@
-# Validation report — Domain Scout 0.2.0
+# Validation report — Domain Scout
 
-Validated on **24 October 2026**, using Node **24.19.0** on Linux. The release
-targets Node 22+ and bundles the runtime dependencies for both plugin clients.
+Each section records one validation run; later versions are further down.
+
+Version 0.2.0 was validated on **24 October 2026**, using Node **24.19.0** on
+Linux. The release targets Node 22+ and bundles the runtime dependencies for
+both plugin clients.
 
 ## Automated acceptance tests
 
@@ -196,6 +199,21 @@ failed to load, the result became a generic "coverage could not be established"
 and hid `rate_limited` and its retry hint. The earlier result now stands, with
 the coverage failure kept in `attempts`; an extended routing test fails without
 the fix.
+
+## Housekeeping, 0.4.1 — 24 October 2026
+
+- The Claude MCP server is now declared in `.claude-plugin/plugin.json`, and
+  the root `.mcp.json` is gone, so opening this repository in Claude Code no
+  longer registers a project server that cannot start. `claude mcp list` in
+  the folder shows no `domain-scout` entry; a headless `--plugin-dir` run shows
+  the plugin server `connected` with all three tools. The packaged MCP test
+  launches the server from the manifest entry.
+- Punktum's [WHOIS specification](https://github.com/Punktum-dk/whois-service-specification)
+  allows one request per second per IP and temporarily bans faster clients.
+  With starts 1,100 ms apart, ten consecutive lookups with `screen: false`
+  completed in 10,042 ms with no ban.
+- `claude plugin validate` passes without warnings; the directory profile's
+  only remaining note is the missing icon.
 
 ## Remaining validation limits
 

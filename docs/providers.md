@@ -1,6 +1,6 @@
 # Providers and interpretation
 
-Version **0.4.0**, reviewed against official documentation on **24 October 2026**.
+Version **0.4.1**, reviewed against official documentation on **24 October 2026**.
 This describes routing and response interpretation. [Validation](validation.md)
 separates fixture checks, live results and unresolved environment limitations.
 
@@ -43,7 +43,13 @@ References: [authentication and limits](https://www.simply.com/dk/docs/api/),
 ## Punktum `.dk` WHOIS
 
 - Query `whois.punktum.dk`, TCP 43, requesting UTF-8; one request in flight and
-  starts at least one second apart. Registrant handles are unnecessary.
+  starts 1,100 ms apart. Registrant handles are unnecessary.
+- Punktum allows one request per second per source IP and temporarily bans
+  clients that exceed it, for an unstated time. Starts exactly one second apart
+  were banned repeatedly in testing, so the spacing keeps a 10% margin. A ban
+  reply returns `rate_limited` with `retryAfterMs: 10000` and pauses further
+  `.dk` lookups for that long. Several Domain Scout processes on one IP still
+  share the limit; DNS screening keeps most taken names away from Punktum.
 - A matching name, recognized registration status and registration date yield
   `registered`. An offered waiting-list name is `unavailable`.
 - The recognized no-entry response is `not_found`, requiring registrar

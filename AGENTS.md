@@ -17,14 +17,16 @@ the MCP server supplies source-backed lookup results and comparable prices.
 
 ## Delegating to Codex
 
-Hand clearly defined implementation tasks to Codex through the Codex plugin
-(`codex:codex-rescue` in its own worktree); keep user-facing behavior and
-wording, the skill and tool descriptions, and architecture with Claude. Always
-use `gpt-6-astra`; medium for mechanical edits, high for multi-file work with
-clear acceptance checks, xhigh for cross-cutting changes or root-cause
-diagnosis. Decide contracts first; parallel tasks never share files. Codex
-leaves changes uncommitted; review the diff, rebuild, and rerun the proving
-check (and any check Codex reports as blocked) before committing. Read
-`docs/codex-delegation.md` for this project's traps, and log each refused
-command in its tally.
+Hand clearly defined implementation tasks to Codex; keep user-facing behavior
+and wording, the skill and tool descriptions, and architecture with Claude.
+This repository sits inside another repository, so the Agent tool's worktree
+isolation and the `codex:codex-rescue` wrapper do not work here: create a
+worktree of this repository yourself and run `codex exec` in it with the brief
+from a file, as `docs/codex-delegation.md` describes. Always use
+`gpt-6-astra`; medium for mechanical edits, high for multi-file work with clear
+acceptance checks, xhigh for cross-cutting changes or root-cause diagnosis.
+Decide contracts first; parallel tasks never share files. Codex leaves changes
+uncommitted and cannot bundle inside its sandbox; review the diff, run
+`npm run check` yourself, and rebuild in the main checkout before committing.
+Log each refused command in the tally in `docs/codex-delegation.md`.
 

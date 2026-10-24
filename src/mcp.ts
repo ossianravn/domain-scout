@@ -24,7 +24,7 @@ function toolResult(value: object) {
 
 export function createMcpServer(engine = new DomainEngine()) {
   const handlers = createToolHandlers(engine);
-  const server = new McpServer({ name: 'domain-scout', version: '0.4.0' }, { instructions });
+  const server = new McpServer({ name: 'domain-scout', version: '0.4.1' }, { instructions });
   server.registerTool('domain_sources', {
     title: 'Inspect domain lookup sources',
     description: 'Show the local registry catalog, published RDAP/WHOIS routes for requested extensions, and configured availability sources. No network by default; refresh=true explicitly updates IANA routing metadata.',

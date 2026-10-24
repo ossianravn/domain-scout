@@ -44,7 +44,7 @@ test('both plugin launch configurations work from a path with spaces, without no
   const bridge = await needsPipeBridge();
   if (bridge) t.diagnostic('Node subprocess socket I/O is unavailable; testing through ordinary OS pipes.');
   try {
-    for (const manifest of ['mcp.json', '.mcp.json']) {
+    for (const manifest of ['mcp.json', '.claude-plugin/plugin.json']) {
       const config = JSON.parse(await readFile(manifest, 'utf8')).mcpServers['domain-scout'];
       const args = config.args.map((arg: string) => arg
         .replace('${PLUGIN_ROOT}', folder).replace('${CLAUDE_PLUGIN_ROOT}', folder));
