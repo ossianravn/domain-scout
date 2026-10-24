@@ -15,3 +15,16 @@ the MCP server supplies source-backed lookup results and comparable prices.
 - Commit rebuilt `dist/` and `skills/find-domains/scripts/domain-scout.cjs` with
   every source change; Git-based plugin installs run them as committed.
 
+## Delegating to Codex
+
+Hand clearly defined implementation tasks to Codex through the Codex plugin
+(`codex:codex-rescue` in its own worktree); keep user-facing behavior and
+wording, the skill and tool descriptions, and architecture with Claude. Always
+use `gpt-6-astra`; medium for mechanical edits, high for multi-file work with
+clear acceptance checks, xhigh for cross-cutting changes or root-cause
+diagnosis. Decide contracts first; parallel tasks never share files. Codex
+leaves changes uncommitted; review the diff, rebuild, and rerun the proving
+check (and any check Codex reports as blocked) before committing. Read
+`docs/codex-delegation.md` for this project's traps, and log each refused
+command in its tally.
+
