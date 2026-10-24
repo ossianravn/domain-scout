@@ -16,19 +16,22 @@ API key, and requires Node.js 22 or newer.
 
 A real run from 24 October 2026, trimmed:
 
-> **You:** Find a Danish domain for an AI news site. Prefer .dk, credible editorial tone.
+> **You:** Find a name and a .com for a language-learning app. The name has to
+> work in English, Spanish and German.
 
-| Domain | Why it fits | Punktum, the .dk registry |
+| Domain | Why it fits | Vercel |
 | --- | --- | --- |
-| aitidende.dk | *Tidende* is the classic Danish newspaper name | no record |
-| aiposten.dk | The *-posten* ending reads as news | no record |
-| aiudsyn.dk | *Udsyn* (outlook) suits analysis | no record |
-| ainyt.dk, aiavisen.dk, dagensai.dk | | registered |
+| **cafeparla.com** | *Café* is the same word in all three languages; *parla* hints at talking in each (*parlotear*, *parlieren*, *parley*) | Available, USD 11.25 first year |
+| parlomundo.com | "I speak the world", with room to grow beyond conversation | Available, USD 11.25 first year |
+| loroparla.com | "The parrot speaks": a ready-made mascot for repeat-after-me practice | Available, USD 11.25 first year |
+| pasito.com, talkito.com, sobremesa.com, tertulia.com and 58 more | | Unavailable |
 
-The agent wrote 40 names, checked them in two batches and rechecked its
-shortlist before answering. "No record" means nobody holds the name; only a
-registrar can confirm you can buy it. Results change, so check again before
-you register.
+The agent wrote 70 names in three waves. It kept to letters that all three
+languages pronounce the same way (no j, v, w, z, ch, ll or qu), and avoided
+names close to Duolingo, Babbel and Tandem. Every short Spanish word and
+invented name in its first wave came back unavailable, so it moved to blends
+and phrases; 8 of those were open at the standard price. Results change, so check again
+before you register.
 
 ## Install
 
@@ -61,7 +64,7 @@ and troubleshooting, see the [installation guide](docs/install.md).
 - "Find the shortest attractive domain for a short URL service."
 - "Find a name for my second brain project. Explore metaphorical and invented names."
 - "Find a domain for an app that helps teachers prepare lessons."
-- "Find a Danish domain for an AI news site. Prefer .dk."
+- "Find a name and a .com for an app that helps remote workers live anywhere for a month."
 - "Check these exact domains and show registration and renewal prices: …"
 
 If you haven't said what kind of name you want, the agent asks once, with
@@ -96,7 +99,7 @@ sequenceDiagram
     participant Agent as Your agent<br>(Claude Code or Codex)
     participant Scout as Domain Scout<br>(local MCP server)
     participant Sources as Registries and<br>registrar API
-    You->>Agent: "Find a .dk name for an AI news site"
+    You->>Agent: "Find a .com for a language-learning app"
     Agent->>Scout: prepare_domain_search
     Scout-->>Agent: brief, open questions, naming directions
     opt Style not given yet
