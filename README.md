@@ -76,6 +76,7 @@ rest of the conversation. Lists of exact domains are checked straight away.
 | `available` | The registry or registrar said it can be registered, at the time shown. |
 | `not_found` | No registration record. Probably free, but not confirmed. |
 | `registered` | Someone holds it. |
+| `likely_taken` | DNS lists nameservers for it, so it is in use. The registry wasn't asked. |
 | `unavailable` | It can't be registered. The source didn't say why: taken, reserved or withheld. |
 | `unknown` | The lookup failed, hit a rate limit or ran out of time. Ask again. |
 | `unsupported` | No source covers this extension, for example `.es`. |
@@ -111,9 +112,10 @@ sequenceDiagram
 ```
 
 Your agent's own model writes the names, so there is no second model and no
-key to set up. The server only looks up exact domains. The domain names you
-check are the only thing it sends out; your project description stays with
-your agent.
+key to set up. The server only looks up exact domains. It sends out nothing
+but the domain names you check: to the registries and Vercel, and for the slow
+registries also to Cloudflare's and Google's public DNS. Your project
+description stays with your agent.
 
 Both clients use the same skill and tools:
 
@@ -128,6 +130,7 @@ Both clients use the same skill and tools:
 
 | Extensions | Source | What it returns |
 | --- | --- | --- |
+| `.dk`, `.nl`, `.be` and WHOIS-only endings, first | DNS over HTTPS (Cloudflare, then Google) | Names that already have nameservers, in about 0.1 s |
 | `.com`, `.io`, `.ai`, `.app`, `.dev` and the other extensions Vercel sells | Vercel Registrar API | Availability and prices |
 | `.dk` | Punktum WHOIS | Registration records and waiting-list status |
 | `.nl` | SIDN | Explicit "free" status |
@@ -147,8 +150,9 @@ data, see [catalog](docs/catalog.md).
 **Speed.** Sources run in parallel, and repeat lookups within a minute come
 from a cache. A call waits up to 10 seconds by default: names not finished by
 then come back `unknown` and can be checked again. `.dk`, `.nl` and `.be`
-answer about one name per second, so the agent checks fewer, better names
-there.
+answer about one name per second. DNS screening answers for names already in
+use there in about a tenth of a second, so only open-looking names wait for the
+registry. Pass `screen: false` to ask the registry anyway.
 
 ## Settings
 
@@ -161,6 +165,7 @@ All optional. Set them in the environment that launches Claude Code or Codex;
 | `DOMAIN_SCOUT_TIMEOUT_MS` | 8000 | Timeout for each network request |
 | `DOMAIN_SCOUT_CACHE_TTL_MS` | 60000 | How long results are reused; 0 turns the cache off |
 | `DOMAIN_SCOUT_WHOIS_INTERVAL_MS` | 1000 | Spacing between WHOIS requests to the same server |
+| `DOMAIN_SCOUT_DNS_RESOLVERS` | Cloudflare, Google | Comma-separated DNS JSON endpoints for screening; empty turns screening off |
 | `SIMPLY_API_KEY` or `SIMPLY_API_TOKEN` | unset | Adds Simply's registrar check for `.dk` |
 | `DOMAIN_SCOUT_WHO_DAT_URL` | unset | Your Who-Dat service |
 | `DOMAIN_SCOUT_WHO_DAT_TOKEN` | unset | Bearer token for that service |

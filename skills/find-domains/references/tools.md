@@ -46,7 +46,8 @@ generation guidance, and optional paginated unverified strings.
 {
   "domains": ["example.com", "example.dk"],
   "fresh": false,
-  "maxWaitMs": 10000
+  "maxWaitMs": 10000,
+  "screen": true
 }
 ```
 
@@ -56,6 +57,12 @@ Subdomains, URLs, paths, and public suffixes alone are invalid.
 shared. `maxWaitMs` controls how long the call waits. Unfinished results remain
 unknown with `reason: time_budget_exhausted`. Already active requests may finish
 and populate the cache; queued requests do not start after their deadline.
+
+`screen` (default true) asks DNS first for names whose registry source is paced
+(`.dk`, `.nl`, `.be`, WHOIS-only endings). A name with nameservers returns
+`likely_taken` from source `dns` at once; the registry is not asked. Other names
+continue to the registry, and the DNS observation stays in `attempts`. Set
+`screen: false` to send a `likely_taken` name to the registry.
 
 Each result preserves status, source, check time, evidence, and any reason,
 retry interval, fallback history, or pricing. A price has currency, registration,

@@ -55,9 +55,10 @@ Judge every name from outside in, before it reaches a lookup:
   endings that fit the market (`.com` for a global product, the local country
   ending for a local one) and say so.
 - **Speed sets the wave size.** `.dk`, `.nl`, `.be` and endings served only by
-  WHOIS answer about one name per second: screen down to the best 10–15 and set
-  `maxWaitMs` to about 1,200 ms per name. `.ch`, `.li` and `.is` manage about
-  four per second. Everything else, including the extensions Vercel sells
+  WHOIS answer about one name per second. DNS rules out names already in use
+  there almost at once, so only open-looking names wait in that queue: send the
+  best 15–20 and set `maxWaitMs` to about 1,200 ms per name. `.ch`, `.li` and
+  `.is` manage about four per second. Everything else, including the extensions Vercel sells
   (`.com`, `.io`, `.ai`, `.app`, `.dev` and more), takes a first wave of 25–50
   names in one call. Use `domain_sources` if you are unsure which source covers
   an ending.
@@ -84,6 +85,8 @@ Judge every name from outside in, before it reaches a lookup:
   conversation, except finalists rechecked with `fresh: true`.
 - Names marked `time_budget_exhausted` or `rate_limited` stay unresolved.
   Retry only those, once, or report them as unresolved.
+- Treat `likely_taken` as taken when ranking. If the user wants that exact
+  name anyway, recheck it with `screen: false` to ask the registry.
 
 ### 5. Learn from the results
 
@@ -105,8 +108,8 @@ Lead with the answer, then the evidence:
 2. **Shortlist table**, three to seven rows: domain, why it fits, status as
    reported, price, and length when shortness matters. Use the reported status
    in plain words ("available", "no registration record", "registered").
-3. **Also checked:** taken names on one line, at most ten and then "and N
-   more"; unresolved names (`unknown`, `unsupported`) on another, with what
+3. **Also checked:** taken names (`registered`, `unavailable`, `likely_taken`)
+   on one line, at most ten and then "and N more"; unresolved names (`unknown`, `unsupported`) on another, with what
    would resolve them.
 4. **Assumptions** you made about language, endings or audience, if any.
 5. **One question** that steers the next wave, such as which names to build on.
@@ -136,6 +139,7 @@ separate step at a registrar. Domain Scout never buys or reserves names.
 | `available` | Available: the named source reports it registrable at the check time. |
 | `not_found` | No registration record. Probably free; a registrar must confirm. |
 | `registered` | Registered. |
+| `likely_taken` | In use: DNS lists nameservers for it. The registry wasn't asked. |
 | `unavailable` | Can't be registered. Don't invent the reason. |
 | `unknown` | Unresolved: failed, rate-limited or out of time. |
 | `unsupported` | No source covers this ending. |

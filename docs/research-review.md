@@ -141,6 +141,13 @@ Novel creative candidates often still need that authoritative request, so the
 extra stage is not automatically faster. If adopted, expose dated delegation
 evidence separately and never promote negative DNS evidence to availability.
 
+*Update, 0.4.0:* adopted in a narrow form after live measurement. Screening
+runs only before paced sources (`.dk`, `.nl`, `.be`, WHOIS-only), where waves
+contain many names in use and each registry lookup costs about a second. It
+reports a separate `likely_taken` state, treats wildcard, alias and resolver
+failures as inconclusive, expires probe caches, and probes the actual suffix.
+See [DNS screening](providers.md#dns-screening). CZDS remains deferred.
+
 **More elaborate failure machinery:** a shared cross-process quota store,
 background retry queues and tuned outage circuit breakers can help a hosted
 service. The document's three-failures/60-seconds/120-second settings are design

@@ -146,6 +146,57 @@ The `.dk` rate limits came from three Codex sessions running at once, each with
 its own server pacing Punktum independently. Results stayed `unknown` with
 `rate_limited` until retried.
 
+## Skill rewrite, 0.3.0 — 24 October 2026
+
+The same requests ran headless before and after the rewrite: Claude Code with
+`--plugin-dir`, Codex with `gpt-6-astra` at medium effort.
+
+| Request and host | 0.2.0 | 0.3.0 |
+| --- | --- | --- |
+| "Find a name for my second brain project.", Codex | Skill not selected; names suggested without any check | Skill selected; one style question with unchecked examples |
+| Danish AI news site, `.dk`, Claude | First call 40 names, 20 starting "ai"; 10 unresolved when the budget ran out | First call 14 screened names, 3 starting "ai"; shortlist of 5 with a recommendation |
+| Danish AI news site, `.dk`, Codex | 6 names; shortlist of 3 | 12 names across four labelled directions; shortlist of 4 |
+| Habit app for busy parents, `.com`, Claude | Not run | 37 names (6 available), then 28 names built on what came back open (15 available); shortlist of 7 with prices |
+| Habit app for busy parents, `.com`, Codex | Not run | 30 names, 11 available; shortlist of 5 with prices and periods |
+
+Two presentation defects were found in these runs and fixed in the skill: a
+check time `02:03:24Z` shown as "03:24" under a UTC heading, and a "taken" line
+listing 44 names. Times are now written as hours and minutes UTC from
+`checkedAt`, and the taken line stops at ten names.
+
+Punktum rate-limited the first `.dk` call in the Claude run after a day of
+repeated test lookups; the agent retried the unresolved names once and resolved
+them all.
+
+## DNS screening, 0.4.0 — 24 October 2026
+
+Ideas from the `domain-search-api` reference project were reviewed; DNS
+screening was adopted (see [providers](providers.md#dns-screening)), while zone
+files, NameSilo, Punktum DAS and all-suffix search were not. `npm run check`
+passed **37 of 37** tests, including one boundary test that fails when the
+wildcard probe is skipped.
+
+Live checks through the bundled CLI, Cloudflare and Google DNS:
+
+| Check | Observed result |
+| --- | --- |
+| 10 `.dk` names: 6 registered today, 4 synthetic | 3,167 ms. The 6 registered names, including `blåbær.dk`, returned `likely_taken` from DNS; the 4 synthetic names went to Punktum and returned `not_found` with a `dns_no_delegation` attempt |
+| The same 6 registered names with `screen: false` | 5,087 ms; Punktum reported all 6 `registered`, agreeing with DNS |
+| `.nl`, `.be`, `.eu` (WHOIS-only) | Registered names `likely_taken`; synthetic `.nl` and `.be` `available` from SIDN and DNS Belgium, synthetic `.eu` `not_found` from WHOIS |
+| `.com` | Not screened; Vercel answered as before |
+| `DOMAIN_SCOUT_DNS_RESOLVERS` empty, or an `http:` URL | Screening off; configuration error naming the variable |
+
+All 26 `.dk` names Punktum had reported registered in earlier runs that day had
+NS records at Cloudflare.
+
+An end-to-end Claude Code run of the Danish request checked 16 names: DNS
+ruled out 8, and the agent listed them as taken. It exposed an older routing
+defect: when Punktum rate-limited three names and Vercel's extension list then
+failed to load, the result became a generic "coverage could not be established"
+and hid `rate_limited` and its retry hint. The earlier result now stands, with
+the coverage failure kept in `attempts`; an extended routing test fails without
+the fix.
+
 ## Remaining validation limits
 
 The Claude Code and Codex checks ran headless, not in the interactive UI.

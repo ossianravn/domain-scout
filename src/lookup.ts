@@ -70,7 +70,9 @@ export class LookupRouter {
           start: index + 1, deadline, skip,
           onResult: items => publish(items.map(item => {
             const previous = output.get(item.domain)!;
-            if (item.source === 'routing' && item.status === 'unsupported') return previous;
+            // No later source answered: keep the earlier result (e.g. rate_limited with its retry hint).
+            if (item.source === 'routing') return item.status === 'unsupported' ? previous
+              : { ...previous, attempts: [...(previous.attempts ?? []), ...(item.attempts ?? [])] };
             return {
               ...item,
               attempts: [

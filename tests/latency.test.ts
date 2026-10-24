@@ -193,6 +193,16 @@ test('coverage failures remain in chronological attempt evidence across a succes
     { source: 'third-catalog', status: 'unknown', reason: 'coverage_lookup_failed' },
   ]);
   assert.ok(!JSON.stringify(output).includes('private detail'));
+
+  // A later coverage failure must not replace a rate-limited result and its retry hint.
+  const limited = provider('limited', {
+    check: async names => names.map(name => result(name, 'limited', 'unknown', 'Fixture',
+      { reason: 'rate_limited', retryAfterMs: 1000 })),
+  });
+  const stalled = new DomainEngine({ context: context(), providers: [limited, third] });
+  const [row] = (await stalled.check(['example.com'])).results;
+  assert.deepEqual([row.source, row.status, row.reason, row.retryAfterMs], ['limited', 'unknown', 'rate_limited', 1000]);
+  assert.deepEqual(row.attempts, [{ source: 'third-catalog', status: 'unknown', reason: 'coverage_lookup_failed' }]);
 });
 
 test('timer-backed settings and tool budgets reject values above the Node timer limit', async () => {

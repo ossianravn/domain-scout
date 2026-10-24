@@ -1,12 +1,12 @@
 # Providers and interpretation
 
-Version **0.2.0**, reviewed against official documentation on **24 October 2026**.
+Version **0.4.0**, reviewed against official documentation on **24 October 2026**.
 This describes routing and response interpretation. [Validation](validation.md)
 separates fixture checks, live results and unresolved environment limitations.
 
 ## Routing and source discovery
 
-For each name, the ordered chain is **Simply → Punktum → ISNIC →
+For each name, the ordered chain is **DNS screening → Simply → Punktum → ISNIC →
 Internetstiftelsen → DNS Belgium → SWITCH → SIDN → Vercel → RDAP → WHOIS →
 Who-Dat**. Only sources supporting that name and enabled configuration are used.
 Only `unknown` or `unsupported` results continue to the next applicable source;
@@ -98,6 +98,39 @@ Reference: [DNS Belgium WHOIS and DAS](https://docs.dnsbelgium.be/be/general/who
   60-second cooldown when the registry supplies no reset time.
 
 Reference: [SWITCH Domain Check](https://www.nic.ch/whois/domaincheck/).
+
+## DNS screening
+
+- Applies only when the first source that supports a name is paced: one with at
+  least 500 ms between requests (Punktum `.dk`, SIDN `.nl`, DNS Belgium `.be`)
+  or generic WHOIS. `.com` and other Vercel-sold endings go straight to Vercel
+  for explicit availability and prices. A configured Simply key makes `.dk`
+  fast, so it is not screened.
+- `GET <resolver>?name=<domain>&type=NS` with `accept: application/dns-json`,
+  Cloudflare first, then Google. Each request gets at most 2.5 s of the wait
+  budget. A reply counts only with HTTP 200, a numeric `Status`, no truncation
+  and a `Question` name matching the domain; anything else, including HTTP 429,
+  moves on to the next resolver.
+- NS records owned by the exact name mean delegation. A random sibling under
+  the same suffix is then queried on the same resolver: if it is delegated too,
+  the suffix has a wildcard and the result stays inconclusive. Probe outcomes
+  are cached per resolver and suffix for 10 minutes.
+- Confirmed delegation returns `likely_taken` (reason `dns_delegated`) with
+  the nameservers in the evidence. Every other outcome (`dns_no_delegation`,
+  `dns_inconclusive`, `dns_unavailable`) returns `unknown`, so the name
+  continues to the registry with the DNS observation kept in `attempts`.
+- DNS never produces `available`, `registered` or `not_found`: a registered
+  name can have no nameservers, and a delegated one is still not registry
+  evidence. `screen: false` skips this stage.
+- Set `DOMAIN_SCOUT_DNS_RESOLVERS` to a comma-separated list of DNS JSON
+  endpoints, or to an empty value to turn screening off.
+
+On 24 October 2026, all 26 `.dk` names that Punktum had reported registered
+that day had NS records at Cloudflare.
+
+References: [Cloudflare DNS JSON](https://developers.cloudflare.com/1.1.1.1/encryption/dns-over-https/make-api-requests/dns-json/),
+[Google DNS JSON](https://developers.google.com/speed/public-dns/docs/doh/json),
+[RFC 2308 negative caching](https://www.rfc-editor.org/rfc/rfc2308.html).
 
 ## SIDN `.nl` RDAP availability
 

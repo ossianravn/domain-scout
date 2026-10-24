@@ -137,7 +137,7 @@ export function prepareDomainSearch(raw: PrepareDomainSearchInput) {
       'Cover at least four directions for a mixed style and three within a single style. No more than a quarter of a wave may share a root, prefix or suffix.',
       'Vary constructions: descriptive, benefit compound, borrowed word, altered word, blend, coinage, phrase across the dot. Keep a direction and a one-line reason with each name.',
       'Screen before checking: drop names that are hard to spell when heard, read two ways, are long for what they carry, misfit the audience, or imitate a known brand.',
-      'Size the wave by source speed: 25-50 names in one check_domains call for fast endings such as .com; the best 10-15 for .dk, .nl, .be and WHOIS-only endings, with maxWaitMs about 1200 per name.',
+      'Size the wave by source speed: 25-50 names in one check_domains call for fast endings such as .com; the best 15-20 for .dk, .nl, .be and WHOIS-only endings, with maxWaitMs about 1200 per name. DNS screening returns likely_taken for names in use there; treat it as taken.',
       'Apply required endings strictly. For preferred endings, check alternatives only for strong labels that are taken there, and mark them as alternatives. Keep unstated budgets open.',
       'After each check, move the next wave towards constructions and endings that came back open, and towards the user\'s favorites. Do not recheck names except finalists with fresh=true.',
       'Present a recommendation, then three to seven names with why each fits, status, source and check time, and price with currency and period. Only available means registrable.',
