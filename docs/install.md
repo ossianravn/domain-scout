@@ -12,9 +12,14 @@ at the end of this guide.
   plugin support.
 - Internet access to the domain lookup providers.
 
-Extract the complete archive into a stable folder. Keep the included manifest
-files and `skills/` directory. Point the commands below to the folder containing
-`plugin.json`, `package.json`, and `dist/`, not to its parent.
+The GitHub repository includes the built bundles, so both clients can install
+straight from it: use `ossianravn/domain-scout` in place of the folder path in
+the `marketplace add` commands below (as in the README).
+
+To install from a copy on disk instead, extract the complete archive into a
+stable folder. Keep the included manifest files and `skills/` directory. Point
+the commands below to the folder containing `plugin.json`, `package.json`, and
+`dist/`, not to its parent.
 
 Verify the runtime in the same terminal you will use to launch the client:
 

@@ -1,185 +1,198 @@
+<p align="center">
+  <img src="docs/assets/banner.jpg" alt="A scout with binoculars looks across a valley of grey tiles at dusk; a few tiles glow amber." width="100%">
+</p>
+
 # Domain Scout
 
-**Creative domain discovery for Codex and Claude Code.**
+Ask your coding agent for a domain name. It suggests names that fit your
+project, looks each one up with the registry or a registrar, and tells you
+which ones you can register, how certain that is, and the price when one is
+quoted.
 
-Domain Scout combines a shared agent skill with a local MCP server. The agent
-understands the project, asks for missing naming preferences with examples,
-creates candidates, and uses the server to check exact domains in batches.
-It uses the model already running in your agent; no separate model API key is
-required. Default lookup sources also work without an API key.
+A plugin for **Claude Code** and **Codex**. It runs on your machine, needs no
+API key, and requires Node.js 22 or newer.
 
-Version **0.2.0**. Requires **Node.js 22+**. The release includes runnable bundles
-and complete TypeScript source. Installing the release does not require npm.
+## What it looks like
+
+A real run from 24 October 2026, trimmed:
+
+> **You:** Find a Danish domain for an AI news site. Prefer .dk, credible editorial tone.
+
+| Domain | Why it fits | Punktum, the .dk registry |
+| --- | --- | --- |
+| aitidende.dk | *Tidende* is the classic Danish newspaper name | no record |
+| aiposten.dk | The *-posten* ending reads as news | no record |
+| aiudsyn.dk | *Udsyn* (outlook) suits analysis | no record |
+| ainyt.dk, aiavisen.dk, dagensai.dk | | registered |
+
+The agent wrote 40 names, checked them in two batches and rechecked its
+shortlist before answering. "No record" means nobody holds the name; only a
+registrar can confirm you can buy it. Results change, so check again before
+you register.
 
 ## Install
 
-Extract the complete archive to a stable folder named `domain-scout`.
-Replace the example path below with that folder's absolute path.
+**Claude Code**
 
-### Codex
-
-```sh
-codex plugin marketplace add /absolute/path/domain-scout
-codex plugin add domain-scout@domain-scout-local
-```
-
-Start a new Codex session and select `find-domains`, or ask to use Domain Scout.
-
-### Claude Code
-
-Try it in one session:
-
-```sh
-claude --plugin-dir /absolute/path/domain-scout
-```
-
-Run `/domain-scout:find-domains`. For a persistent installation:
-
-```sh
-claude plugin marketplace add /absolute/path/domain-scout
+```bash
+claude plugin marketplace add ossianravn/domain-scout
 claude plugin install domain-scout@domain-scout-local
 ```
 
-See [the installation guide](docs/install.md) for Windows, WSL, credentials,
-updates, and troubleshooting. This package targets local agent runtimes;
-browser-only clients need a separately hosted remote MCP deployment.
+Start a new session and ask for a name, or run `/domain-scout:find-domains`.
 
-## Try these requests
+**Codex**
 
-- “Find the shortest attractive domain for a short URL service.”
-- “Find a name for my second brain project. Explore metaphorical and invented names.”
-- “Find a domain for a teaching app that helps teachers prepare lessons.”
-- “Find a Danish domain for an AI news site. Prefer `.dk` and a credible editorial tone.”
-- “Check these exact domains and show any registration and renewal quotes.”
+```bash
+codex plugin marketplace add ossianravn/domain-scout
+codex plugin add domain-scout@domain-scout-local
+```
 
-For an open naming request, the skill first asks about an unresolved style:
-descriptive/exact, suggestive/close, metaphorical, playful, invented, across the
-dot, or a mixture. It reuses preferences already given. Direct availability
-checks proceed immediately.
+Start a new session and begin with "Use Domain Scout to…", or pick
+`find-domains` from the skill list. In Codex, a plain naming request may not
+trigger the skill.
 
-## What is implemented
+To try a local copy without installing it, run
+`claude --plugin-dir /path/to/domain-scout`. For Windows, WSL, credentials
+and troubleshooting, see the [installation guide](docs/install.md).
 
-| Component | Purpose |
+## Things to ask
+
+- "Find the shortest attractive domain for a short URL service."
+- "Find a name for my second brain project. Explore metaphorical and invented names."
+- "Find a domain for an app that helps teachers prepare lessons."
+- "Find a Danish domain for an AI news site. Prefer .dk."
+- "Check these exact domains and show registration and renewal prices: …"
+
+If you haven't said what kind of name you want, the agent asks once, with
+examples for your project: descriptive, suggestive, metaphorical, playful,
+invented, a phrase across the dot, or a mix. It remembers your answer for the
+rest of the conversation. Lists of exact domains are checked straight away.
+
+## Reading the results
+
+| Status | Meaning |
 | --- | --- |
-| `prepare_domain_search` | Structured naming brief, illustrated preference questions, semantic directions, and optional short-name pages |
-| `check_domains` | Batched lookups, source routing, evidence, prices, caching, and a configurable wait budget |
-| `domain_sources` | Local catalog counts, published routes for requested extensions, configured sources, and explicit metadata refresh |
-| `find_domains` MCP prompt | Starts the workflow in clients that expose MCP prompts |
-| `find-domains` agent skill | Creative generation, clarification, ranking, feedback, and final verification |
-| Bundled CLI | The same prepare/check/sources operations when shell access is available |
+| `available` | The registry or registrar said it can be registered, at the time shown. |
+| `not_found` | No registration record. Probably free, but not confirmed. |
+| `registered` | Someone holds it. |
+| `unavailable` | It can't be registered. The source didn't say why: taken, reserved or withheld. |
+| `unknown` | The lookup failed, hit a rate limit or ran out of time. Ask again. |
+| `unsupported` | No source covers this extension, for example `.es`. |
+| `invalid` | Not a domain you can register: a URL, a subdomain or a bare extension. |
 
-The naming directions cover short links, second brains, teaching, AI news, and
-general projects. The host agent adapts those directions to the actual audience
-and language. No rigid list of generated brand names replaces that judgment.
+Every result keeps its source and check time. Prices keep their currency and
+period; when a source gives no renewal period, it stays unknown. Domain Scout
+doesn't buy domains, search resale listings or check trademarks.
 
-For shortest-domain requests, C/V/L/D patterns generate a finite, paginated
-search space. Candidates are ordered by the **complete ASCII hostname length**,
-including dots and suffixes. Overlapping patterns are deduplicated. A cursor
-can resume very large spaces without enumerating earlier names. Pages remain
-unverified until checked. See [naming behavior](docs/naming.md).
+## How it works
 
-## Lookup sources and evidence
+```mermaid
+%%{init: {"sequence": {"mirrorActors": false}}}%%
+sequenceDiagram
+    autonumber
+    actor You
+    participant Agent as Your agent<br>(Claude Code or Codex)
+    participant Scout as Domain Scout<br>(local MCP server)
+    participant Sources as Registries and<br>registrar API
+    You->>Agent: "Find a .dk name for an AI news site"
+    Agent->>Scout: prepare_domain_search
+    Scout-->>Agent: brief, open questions, naming directions
+    opt Style not given yet
+        Agent->>You: Descriptive, playful, invented, or a mix?
+        You->>Agent: A mix
+    end
+    Agent->>Agent: Write candidate names
+    Agent->>Scout: check_domains (one batch)
+    Scout->>Sources: Exact lookups, paced per source
+    Sources-->>Scout: Records, availability, prices
+    Scout-->>Agent: Status, source, time and price per name
+    Agent->>You: Shortlist with evidence
+```
 
-| Source | Main use | Access |
+Your agent's own model writes the names, so there is no second model and no
+key to set up. The server only looks up exact domains. The domain names you
+check are the only thing it sends out; your project description stays with
+your agent.
+
+Both clients use the same skill and tools:
+
+| Part | What it does |
+| --- | --- |
+| `find-domains` skill | Tells the agent how to ask, generate, check, rank and present |
+| `prepare_domain_search` tool | Turns your request into a brief, questions and naming directions; lists short candidates from patterns such as `CVC` |
+| `check_domains` tool | Looks up a batch of exact domains and returns status, evidence and prices |
+| `domain_sources` tool | Shows which sources cover an extension, from a bundled catalog |
+
+## Where the answers come from
+
+| Extensions | Source | What it returns |
 | --- | --- | --- |
-| Vercel Registrar API | Availability and quoted prices on supported extensions; batches up to 200 | Public, no key |
-| ISNIC DAC | `.is` registration availability | Public, no key |
-| Internetstiftelsen Free | `.se` and `.nu` availability | Public, no key |
-| Punktum WHOIS | `.dk` registration records and waiting-list status | Public TCP 43, no key |
-| DNS Belgium DAS | `.be` registration availability | Public TCP 4343, no key |
-| SWITCH Domain Check | `.ch` and `.li` registration availability | Public TCP 4343, no key |
-| SIDN RDAP | `.nl` explicit free status or unavailable evidence | Public, no key |
-| Catalog-routed RDAP | Registration / no-record evidence with alternate endpoints | Public, no key |
-| Catalog-routed WHOIS | Conservative fallback across published registry routes | Public TCP 43, no key |
-| Simply | Optional `.dk` registrar confirmation | `SIMPLY_API_KEY` or `SIMPLY_API_TOKEN` |
-| Who-Dat | Optional self-hosted RDAP/WHOIS bridge | Owner-provided HTTP(S) endpoint; optional token |
+| `.com`, `.io`, `.ai`, `.app`, `.dev` and the other extensions Vercel sells | Vercel Registrar API | Availability and prices |
+| `.dk` | Punktum WHOIS | Registration records and waiting-list status |
+| `.nl` | SIDN | Explicit "free" status |
+| `.se`, `.nu` | Internetstiftelsen | Availability |
+| `.is` | ISNIC | Availability |
+| `.be` | DNS Belgium | Availability |
+| `.ch`, `.li` | SWITCH | Availability |
+| Other extensions with a published service | Registry RDAP, then WHOIS | Registration records |
+| `.dk`, optional | Simply, with your API key | Registrar confirmation |
+| Any, optional | A [Who-Dat](docs/who-dat.md) service you run | RDAP and WHOIS through your own proxy |
 
-The bundled catalog projects routing fields from [IANA's full TLD registry](https://www.iana.org/domains/root/files).
-The 23 October 2026 snapshot has **1,437 active root records**, **1,207 with RDAP
-routes** after official `.de`/`.ch`/`.li` supplements, **871 with WHOIS routes**,
-and **1,367 with at least one route**. These counts describe published metadata;
-they do not measure live service success, parser coverage or open registration.
-Some published WHOIS routes are intentionally excluded from generic checks.
+No source needs a key. Dedicated registry checks run before the general ones,
+and a source that doesn't sell an extension can't mark it taken. For the full
+routing order, see [sources](docs/providers.md); for the bundled IANA routing
+data, see [catalog](docs/catalog.md).
 
-`domain_sources` reads this catalog immediately without a network request.
-Supply `tlds` to inspect particular extensions; `refresh: true` explicitly
-refreshes IANA metadata for the running process and retains the previous data
-if refresh fails. It does not probe the listed services. See [catalog details](docs/catalog.md).
+**Speed.** Sources run in parallel, and repeat lookups within a minute come
+from a cache. A call waits up to 10 seconds by default: names not finished by
+then come back `unknown` and can be checked again. `.dk` and `.nl` answer
+about one name per second, so large batches on those take longer.
 
-Provider coverage is checked before interpreting results. In particular, an
-unsupported suffix cannot become “unavailable” just because a registrar returns
-false. Generic RDAP and WHOIS no-record results remain
-`not_found`; they are not claimed available for purchase.
+## Settings
 
-The seven states are `available`, `registered`, `unavailable`, `not_found`,
-`unsupported`, `unknown`, and `invalid`. Each result retains its source and check
-time. Prices retain currency and quoted periods. Unknown renewal periods remain
-unknown. The plugin does not buy domains or search aftermarket listings.
+All optional. Set them in the environment that launches Claude Code or Codex;
+`.env` files are not read.
 
-See [provider behavior and official references](docs/providers.md) for source
-limits, routing order and interpretation. The [research review](docs/research-review.md)
-explains the additions adopted for 0.2 and why DNS/CZDS screening remains a
-possible hosted-service extension.
-
-To bridge a network that cannot reach WHOIS, configure your own Who-Dat service
-with `DOMAIN_SCOUT_WHO_DAT_URL`. Its negative boolean result remains `unknown`;
-it does not establish availability. Setup, upstream cache behavior and a pinned
-Docker Compose example are in [the Who-Dat guide](docs/who-dat.md).
-
-## Speed and controls
-
-The server batches supported names, runs independent sources concurrently,
-coalesces identical in-progress work, and caches evidence for 60 seconds.
-Generic RDAP and WHOIS queues are separated by upstream host; RDAP can try
-alternate published URLs after unresolved failures. `fresh: true` bypasses the
-plugin's result cache when rechecking finalists. It cannot bypass a remote
-service's own cache. Unknown results are not cached.
-
-`check_domains` has a **10-second default wait budget**. It returns completed
-results and marks unfinished names `unknown` with `time_budget_exhausted`.
-Pass `maxWaitMs` to change the budget. Already active requests may finish and
-populate the cache; queued requests do not start after their deadline.
-
-This matters for `.dk` and `.nl`: public `.dk` WHOIS requests are spaced one
-second apart, and SIDN's `.nl` service rejects requests closer than about a
-second, so about nine names of either fit the default budget. The optional
-Simply adapter offers `.dk` registrar confirmation without using that WHOIS
-path. All upstream limits and `Retry-After` instructions still apply.
-
-| Environment variable | Default | Meaning |
+| Variable | Default | Effect |
 | --- | --- | --- |
-| `DOMAIN_SCOUT_TIMEOUT_MS` | 8000 | Each network request's timeout |
-| `DOMAIN_SCOUT_CACHE_TTL_MS` | 60000 | Cache duration; zero disables caching |
-| `DOMAIN_SCOUT_MAX_WAIT_MS` | 10000 | Default whole-call wait budget |
-| `DOMAIN_SCOUT_WHOIS_INTERVAL_MS` | 1000 | Local spacing between generic WHOIS starts on the same host |
-| `SIMPLY_API_KEY` / `SIMPLY_API_TOKEN` | Unset | Optional `.dk` registrar credential |
-| `DOMAIN_SCOUT_WHO_DAT_URL` | Unset | Optional owner-provided Who-Dat base URL |
-| `DOMAIN_SCOUT_WHO_DAT_TOKEN` | Unset | Optional Bearer token for that service |
+| `DOMAIN_SCOUT_MAX_WAIT_MS` | 10000 | How long a check waits before returning what it has |
+| `DOMAIN_SCOUT_TIMEOUT_MS` | 8000 | Timeout for each network request |
+| `DOMAIN_SCOUT_CACHE_TTL_MS` | 60000 | How long results are reused; 0 turns the cache off |
+| `DOMAIN_SCOUT_WHOIS_INTERVAL_MS` | 1000 | Spacing between WHOIS requests to the same server |
+| `SIMPLY_API_KEY` or `SIMPLY_API_TOKEN` | unset | Adds Simply's registrar check for `.dk` |
+| `DOMAIN_SCOUT_WHO_DAT_URL` | unset | Your Who-Dat service |
+| `DOMAIN_SCOUT_WHO_DAT_TOKEN` | unset | Bearer token for that service |
 
-The process inherits these variables. `.env` files are not implicitly loaded.
-Only queried domains go to lookup sources; the naming brief stays with the host.
+## Command line
 
-## CLI and development
+The same lookups work without an agent:
 
-```sh
+```bash
+node dist/cli.cjs check '{"domains":["example.com","example.dk"],"fresh":true}'
 node dist/cli.cjs prepare '{"project":"A second brain app","namingStyles":["mixed"]}'
-node dist/cli.cjs check '{"domains":["example.com"],"fresh":true}'
-node dist/cli.cjs sources '{"tlds":["dk","com","de","ch","nl"]}'
+node dist/cli.cjs sources '{"tlds":["dk","com","nl"]}'
 ```
 
-Omit the JSON argument, or use `-`, to read it from stdin. For development:
+Pass `-` or nothing to read the JSON from stdin.
 
-```sh
+## Development
+
+```bash
 npm ci
-npm run check
-npm run smoke
+npm run check   # typecheck, build, offline tests
+npm run smoke   # live lookups against public sources
 ```
 
-`check` typechecks, builds, and runs offline acceptance tests. `smoke` explicitly
-contacts public providers. The build refreshes the MCP bundle, CLI bundle,
-skill fallback, and bundled dependency notices. Generated bundles are the only
-large source-like files; authored modules stay below 300 lines.
-Run `npm run update:registry` and rebuild to embed a newer IANA routing snapshot.
+`npm run build` regenerates `dist/` and the skill's copy of the CLI. Commit
+them with your source changes, because Git installs run them as committed.
+Keep source files under 300 lines. Run `npm run update:registry`, then build,
+to embed newer IANA routing data.
 
-See [validation results](docs/validation.md) for what was actually tested and
-what still requires validation in a native client or with credentials.
+## More
+
+- [Installation guide](docs/install.md): Windows, WSL, credentials, updates, troubleshooting
+- [Sources](docs/providers.md): routing order, limits and how each answer is read
+- [Naming](docs/naming.md): directions and shortest-domain search
+- [Catalog](docs/catalog.md): the bundled IANA routing data
+- [Validation](docs/validation.md): what has been tested, and what hasn't

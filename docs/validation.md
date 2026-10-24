@@ -123,11 +123,34 @@ Each session loaded the plugin with `claude --plugin-dir` in headless mode. The
 - **Routing results swapped `reason` and `evidence`.** Unsupported names now carry
   `no_configured_source` (or `coverage_lookup_failed`) and a readable sentence.
 
+### Installs from GitHub and native Codex
+
+`claude plugin marketplace add ossianravn/domain-scout` followed by
+`claude plugin install domain-scout@domain-scout-local`, run against an empty
+Claude configuration folder, installed 0.2.0 with `dist/server.cjs` present.
+
+Codex CLI **0.163.0** installed the plugin with
+`codex plugin marketplace add ossianravn/domain-scout --ref main` and
+`codex plugin add domain-scout@domain-scout-local`. Each `codex exec` run used
+`gpt-6-astra` at medium effort in a read-only sandbox; MCP calls ran without
+approval prompts.
+
+| Request | Observed workflow |
+| --- | --- |
+| Five exact domains with quotes | Read the skill, one `check_domains` call, recheck of one rate-limited `.dk` name; quotes reported with their periods |
+| Danish AI news site, prefer `.dk` | Brief, six candidates, retry of two rate-limited names, shortlist reported as “no registration record”, not available |
+| “Find a name for my second brain project.” | Skill not selected: names suggested without the style question or any check |
+| “Use Domain Scout to find a name for my second brain project.” | Skill selected; `prepare_domain_search` returned `ask_preferences` and the agent asked about style |
+
+The `.dk` rate limits came from three Codex sessions running at once, each with
+its own server pacing Punktum independently. Results stayed `unknown` with
+`rate_limited` until retried.
+
 ## Remaining validation limits
 
-Native installation inside Codex was not performed. The Claude Code checks above
-used `--plugin-dir` in headless mode rather than a marketplace install or the
-interactive UI.
+The Claude Code and Codex checks ran headless, not in the interactive UI.
+In Codex, a naming request that doesn't mention domains or Domain Scout may not
+select the skill; the README tells Codex users to name it.
 
 Generic WHOIS has fixture coverage only: no live host outside the dedicated
 services was confirmed. SIDN's limit is an observation from one IP on one day,
