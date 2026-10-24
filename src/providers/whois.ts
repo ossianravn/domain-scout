@@ -7,7 +7,8 @@ import { classifyWhois } from './whois-parser.js';
 
 // Dedicated services have different budgets; .pl WHOIS permits only 100/day/IP.
 // Norid's ordinary WHOIS is for technical/contact lookups, not availability searches.
-export const genericWhoisExcludedSuffixes = new Set(['dk', 'is', 'be', 'ch', 'li', 'nl', 'se', 'nu', 'pl', 'no']);
+// Red.es opens port 43 only to IP addresses it has authorised; others time out.
+export const genericWhoisExcludedSuffixes = new Set(['dk', 'is', 'be', 'ch', 'li', 'nl', 'se', 'nu', 'pl', 'no', 'es']);
 
 function query(host: string, name: DomainName): string {
   // DENIC public-whois docs; JPRS official examples use /e for English output.

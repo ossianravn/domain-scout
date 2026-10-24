@@ -93,6 +93,8 @@ Keep these distinctions intact:
 
 Never infer availability from DNS, an HTTP error, or a generic RDAP 404.
 For `.dk`, public WHOIS is slow and a no-record result remains `not_found`.
+`.dk` and `.nl` sources each answer about one name per second; raise `maxWaitMs`
+for large batches on those suffixes or check a smaller shortlist.
 A configured Simply token provides a registrar check for `.dk`. Report failed
 connectivity plainly; do not fill gaps with invented evidence.
 Generic WHOIS fallbacks also preserve no-record results as `not_found`.

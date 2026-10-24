@@ -3,8 +3,9 @@ import { checked, httpFailure, malformed, sameDomain, transportFailure } from '.
 
 /** SIDN RDAP Manual v1.4, section 2.1: domain 404 is free; 200 can also be withheld. */
 export function createSidnProvider(ctx: ProviderContext): DomainProvider {
+  // No published quota; observed 2026-10-24: requests under ~1 s apart get HTTP 429 without Retry-After.
   return {
-    id: 'sidn', batchSize: 1, minIntervalMs: 100, concurrency: 4,
+    id: 'sidn', batchSize: 1, minIntervalMs: 1100, concurrency: 1,
     supports: async (name) => name.suffix === 'nl',
     async check(names) {
       return Promise.all(names.map(async (name) => {

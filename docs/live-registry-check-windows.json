@@ -1,0 +1,91 @@
+{
+  "runAt": "2026-10-24T01:23:59.192Z",
+  "results": [
+    {
+      "domain": "sidn.nl",
+      "displayDomain": "sidn.nl",
+      "hostnameLength": 7,
+      "labelLength": 4,
+      "source": "sidn",
+      "status": "unavailable",
+      "checkedAt": "2026-10-24T01:23:58.204Z",
+      "evidence": "SIDN returned a matching domain record. It may be registered, withheld or excluded from registration.",
+      "reason": "registry_reports_unavailable",
+      "durationMs": 189,
+      "cached": false
+    },
+    {
+      "domain": "domain-scout-20261024-7ac5c9e21.nl",
+      "displayDomain": "domain-scout-20261024-7ac5c9e21.nl",
+      "hostnameLength": 34,
+      "labelLength": 31,
+      "source": "sidn",
+      "status": "available",
+      "checkedAt": "2026-10-24T01:23:59.192Z",
+      "evidence": "SIDN explicitly reports the matching .nl domain free in its RDAP status.",
+      "durationMs": 1177,
+      "cached": false
+    },
+    {
+      "domain": "denic.de",
+      "displayDomain": "denic.de",
+      "hostnameLength": 8,
+      "labelLength": 5,
+      "source": "rdap",
+      "status": "registered",
+      "checkedAt": "2026-10-24T01:23:58.185Z",
+      "evidence": "rdap.denic.de returned a matching registration record.",
+      "registry": "rdap.denic.de",
+      "durationMs": 170,
+      "cached": false
+    },
+    {
+      "domain": "domain-scout-20261024-7ac5c9e21.de",
+      "displayDomain": "domain-scout-20261024-7ac5c9e21.de",
+      "hostnameLength": 34,
+      "labelLength": 31,
+      "source": "rdap",
+      "status": "not_found",
+      "checkedAt": "2026-10-24T01:23:58.186Z",
+      "evidence": "rdap.denic.de returned a no-record response. Registrability and pricing remain unverified.",
+      "registry": "rdap.denic.de",
+      "durationMs": 170,
+      "cached": false
+    },
+    {
+      "domain": "nic.ch",
+      "displayDomain": "nic.ch",
+      "hostnameLength": 6,
+      "labelLength": 3,
+      "source": "rdap",
+      "status": "unavailable",
+      "checkedAt": "2026-10-24T01:23:58.167Z",
+      "evidence": "rdap.nic.ch returned a matching domain record that may be registered or withheld.",
+      "registry": "rdap.nic.ch",
+      "durationMs": 151,
+      "cached": false
+    },
+    {
+      "domain": "domain-scout-20261024-7ac5c9e21.ch",
+      "displayDomain": "domain-scout-20261024-7ac5c9e21.ch",
+      "hostnameLength": 34,
+      "labelLength": 31,
+      "source": "rdap",
+      "status": "not_found",
+      "checkedAt": "2026-10-24T01:23:58.168Z",
+      "evidence": "rdap.nic.ch returned a no-record response. Registrability and pricing remain unverified.",
+      "registry": "rdap.nic.ch",
+      "durationMs": 152,
+      "cached": false
+    }
+  ],
+  "summary": {
+    "inputCount": 6,
+    "uniqueDomains": 6,
+    "cacheHits": 0,
+    "elapsedMs": 1179,
+    "maxWaitMs": 10000,
+    "deferred": 0
+  },
+  "interpretation": "Available means explicitly reported registrable by the named source at checkedAt. No-record, unknown, unsupported and invalid results need further resolution. Prices retain the provider currency and quoted periods."
+}

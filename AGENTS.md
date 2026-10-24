@@ -12,4 +12,6 @@ the MCP server supplies source-backed lookup results and comparable prices.
 - Use focused integration/acceptance checks for complete workflows.
 - Keep both plugin manifests and the shared skill consistent with the runtime.
 - Treat generated names as suggestions until a lookup establishes their status.
+- Commit rebuilt `dist/` and `skills/find-domains/scripts/domain-scout.cjs` with
+  every source change; Git-based plugin installs run them as committed.
 

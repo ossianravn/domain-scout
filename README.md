@@ -140,9 +140,11 @@ results and marks unfinished names `unknown` with `time_budget_exhausted`.
 Pass `maxWaitMs` to change the budget. Already active requests may finish and
 populate the cache; queued requests do not start after their deadline.
 
-This matters for `.dk`: public WHOIS requests are spaced one second apart.
-The optional Simply adapter offers registrar confirmation without using that
-WHOIS path. All upstream limits and `Retry-After` instructions still apply.
+This matters for `.dk` and `.nl`: public `.dk` WHOIS requests are spaced one
+second apart, and SIDN's `.nl` service rejects requests closer than about a
+second, so about nine names of either fit the default budget. The optional
+Simply adapter offers `.dk` registrar confirmation without using that WHOIS
+path. All upstream limits and `Retry-After` instructions still apply.
 
 | Environment variable | Default | Meaning |
 | --- | --- | --- |

@@ -41,7 +41,13 @@ export class LookupRouter {
         } catch (error) {
           const reason = (error as { reason?: string })?.reason ?? (error instanceof Error ? error.message : 'Lookup failed');
           const retryAfterMs = (error as { retryAfterMs?: number })?.retryAfterMs;
-          checked = chunk.map(name => result(name, provider.id, 'unknown', 'Request failed', { reason, retryAfterMs }));
+          // Scheduler rejections mean the request was never sent; say so instead of implying an upstream failure.
+          const evidence = reason === 'time_budget_exhausted'
+            ? 'The wait budget expired before this request was sent.'
+            : reason === 'rate_limited'
+              ? 'Not sent: this source is cooling down after a rate limit.'
+              : 'Request failed';
+          checked = chunk.map(name => result(name, provider.id, 'unknown', evidence, { reason, retryAfterMs }));
         }
         const byDomain = new Map(checked.map(item => [item.domain.toLowerCase(), item]));
         const fallback: DomainName[] = [];
@@ -114,8 +120,9 @@ export class LookupRouter {
         if (!flushQueued) { flushQueued = true; queueMicrotask(flush); }
         return;
       }
-      publish([result(name, 'routing', attempts.length ? 'unknown' : 'unsupported', 'Provider coverage', {
-        reason: attempts.length ? 'Provider coverage could not be fully established.' : 'No configured source supports this suffix.',
+      publish([result(name, 'routing', attempts.length ? 'unknown' : 'unsupported', attempts.length
+        ? 'Provider coverage could not be fully established.' : 'No configured source supports this suffix.', {
+        reason: attempts.length ? 'coverage_lookup_failed' : 'no_configured_source',
         ...(attempts.length ? { attempts } : {}),
       })]);
     }));

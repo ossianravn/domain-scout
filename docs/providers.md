@@ -101,8 +101,10 @@ Reference: [SWITCH Domain Check](https://www.nic.ch/whois/domaincheck/).
 
 ## SIDN `.nl` RDAP availability
 
-- `GET https://rdap.sidn.nl/domain/{domain}` with four concurrent requests and
-  100 ms spacing; this is local pacing, not a claimed published quota.
+- `GET https://rdap.sidn.nl/domain/{domain}`, one request at a time with starts
+  1,100 ms apart. SIDN publishes no quota; on 2026-10-24 requests under about one
+  second apart (or in parallel) received HTTP 429 without `Retry-After`, while
+  1-second spacing succeeded. A 429 pauses further `.nl` starts for one second.
 - A 404 becomes `available` only with a matching domain object and the exact
   status array `["free"]`. A structured no-record error without explicit free
   status remains `not_found`.
@@ -163,12 +165,15 @@ References: [IANA root registry](https://www.iana.org/domains/root/files),
   unrecognized formats remain `unknown`; rate-limit replies estimate a 60-second cooldown.
 - Generic WHOIS excludes `.dk`, `.is`, `.be`, `.ch`, `.li`, `.nl`, `.se` and `.nu`
   because dedicated checks have separate semantics/budgets. It also excludes
-  `.pl` and `.no`; NASK publishes a small daily allowance and Norid's WHOIS
-  directory is intended for operational/contact lookup rather than availability.
+  `.pl`, `.no` and `.es`; NASK publishes a small daily allowance, Norid's WHOIS
+  directory is intended for operational/contact lookup rather than availability,
+  and Red.es opens port 43 only to IP addresses it has authorised (unauthorised
+  connections time out, so `.es` is reported `unsupported` at once).
 
 References: [WHOIS protocol](https://www.rfc-editor.org/rfc/rfc3912.html),
 [NASK WHOIS FAQ](https://www.dns.pl/en/whois/FAQ),
-[Norid directory purpose](https://www.norid.no/en/domeneoppslag/vilkar/).
+[Norid directory purpose](https://www.norid.no/en/domeneoppslag/vilkar/),
+[Red.es port 43 access](https://www.dominios.es/en/sobre-dominios/valores-anadidos).
 
 ## Optional Who-Dat bridge
 
