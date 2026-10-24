@@ -44,6 +44,7 @@ measurements. This environment required its network proxy and network permission
 | SIDN | `sidn.nl` unavailable; the synthetic-name request returned HTTP 429 and remained unknown |
 | Final bundled CLI: two `.com` names and one `.nl` name | 8,014 ms; Vercel returned one unavailable and one explicitly available result; SIDN timed out and remained unknown |
 
+The Windows run below supersedes the SIDN and TCP-registry observations above.
 Exact results are included in [live-registry-check-v0.2.json](live-registry-check-v0.2.json)
 and [live-bundle-check-v0.2.json](live-bundle-check-v0.2.json). The direct check can
 be repeated with `node --import tsx scripts/live-registry-smoke.ts` after installing
@@ -75,22 +76,62 @@ All manifest/catalog JSON files parse, version fields agree, and the skill CLI
 copy matches the main bundle. All authored source and test files are under 300
 lines. Bundled dependency notices and catalog provenance are included.
 
+## Windows, Claude Code and live registries — 24 October 2026
+
+Run on Windows 11 with Node **24.19.0** and Claude Code **2.1.306**, on a direct
+connection without a proxy. After the fixes below, `npm run check` passed
+**35 of 35** tests. `claude plugin validate` passed; its directory profile notes
+no `LICENSE` (required for directory submission) and no icon.
+
+### Native Claude Code
+
+Each session loaded the plugin with `claude --plugin-dir` in headless mode. The
+`domain-scout` server connected, exposed all three tools and the
+`domain-scout:find-domains` skill, and needed no permission beyond those tools.
+
+| Request | Observed workflow |
+| --- | --- |
+| Five exact domains with quotes | One `check_domains` call; renewal period left unknown; no cause invented for `unavailable` |
+| “Find a name for my second brain project.” | `prepare_domain_search` returned `ask_preferences`; the agent asked about style with examples and checked nothing |
+| Danish AI news site, prefer `.dk`, mixed first pass | Brief, `domain_sources`, 40 `.dk` candidates, fresh recheck of 7 finalists; shortlist reported as `not_found`, not available. 153 s end to end, mostly `.dk` pacing |
+| Fresh `git clone` of the fix commit, no `node_modules` | Server connected from the committed bundle; `.nl` available, `.es` unsupported, `example.com` unavailable |
+
+### Live sources
+
+| Source | Observed result |
+| --- | --- |
+| Vercel, 20 `.com` names cold | 6,600 ms; `example.com` unavailable, 19 synthetic names available at USD 11.25 for one year; renewal USD 11.25, period not supplied. Repeat: 20 cache hits, 0 ms |
+| DNS Belgium DAS (TCP 4343) | `dnsbelgium.be` registered; synthetic `.be` available |
+| SWITCH Domain Check (TCP 4343) | `switch.ch`, `nic.li` unavailable; synthetic `.ch`, `.li` available |
+| Internetstiftelsen | `iis.se`, `iis.nu` registered; synthetic `.se`, `.nu` available |
+| ISNIC | `isnic.is` unavailable; synthetic `.is` available |
+| Punktum WHOIS (TCP 43) | `punktum.dk`, `forskning.dk`, `blåbær.dk` registered; synthetic `.dk` `not_found` |
+| Catalog RDAP | `denic.de`, `bbc.co.uk` registered; synthetic `.de`, `.co.uk` `not_found` |
+| SIDN, after the pacing fix | Five `.nl` names in one batch, all conclusive in 4,487 ms; [registry smoke](live-registry-check-windows.json) clean |
+
+### Defects found and fixed
+
+- **Git installs had no server.** `dist/` and the skill CLI were ignored, so a
+  clone could not start MCP. Both are now committed and marked generated.
+- **SIDN rejected most of a batch.** Parallel requests, or starts under about a
+  second apart, received HTTP 429 without `Retry-After`; 1-second spacing
+  succeeded. SIDN now runs one request at a time, 1,100 ms apart.
+- **Never-sent lookups read “Request failed”.** Names deferred by the wait
+  budget or a cooldown now say the request was not sent.
+- **`.es` consumed the wait budget.** `whois.nic.es` timed out after 8 s per name;
+  Red.es serves port 43 only to authorised IPs. `.es` is now `unsupported` at once.
+- **Routing results swapped `reason` and `evidence`.** Unsupported names now carry
+  `no_configured_source` (or `coverage_lookup_failed`) and a readable sentence.
+
 ## Remaining validation limits
 
-Native installation inside the Codex and Claude Code interfaces was not performed.
-Codex command syntax was checked against installed CLI help during 0.1.0 work;
-Claude Code was not installed here. Isolated stdio tests verify the launch
-configurations and MCP behavior, not every native client UI flow.
+Native installation inside Codex was not performed. The Claude Code checks above
+used `--plugin-dir` in headless mode rather than a marketplace install or the
+interactive UI.
 
-Direct TCP registry connections were not reachable from this environment.
-Punktum WHOIS, generic WHOIS, Belgium DAS and SWITCH Domain Check have fixture
-coverage; live target-host connectivity is still required. The documented IIS
-HTTP endpoint also failed in this Node/proxy environment. Its free, occupied,
-mismatched and HTML cases have fixture coverage.
-
-SIDN's explicit free response format was inspected during provider research and
-is exercised by fixtures. The final live run encountered rate limiting and a
-timeout, so it does not certify dependable bulk throughput for that service.
+Generic WHOIS has fixture coverage only: no live host outside the dedicated
+services was confirmed. SIDN's limit is an observation from one IP on one day,
+not a published quota.
 
 No real Simply token or configured Who-Dat deployment was supplied. Those routes
 are fixture-tested. The optional Who-Dat Docker example is version/digest pinned,
